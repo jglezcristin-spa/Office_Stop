@@ -384,6 +384,7 @@ export default function App() {
         supabase.from("productos").select("*").order("nombre"),
         supabase.from("fotos").select("*").order("orden", { ascending: true }),
         supabase.from("documentos").select("*").order("orden", { ascending: true }),
+      ]);
       setPerfil(cli || { id: uid, nombre: sesion.user.email, contacto: "", nivel: "Cliente" });
       setDatos({ catalogos: cats || [], productos: prods || [], fotos: fots || [], documentos: docs || [] });
     })();
