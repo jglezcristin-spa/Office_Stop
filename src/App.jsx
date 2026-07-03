@@ -122,6 +122,7 @@ function Login() {
 
 function Catalogos({ lista, onError }) {
   const tonos = ["#7BA00F", "#C79B06", "#33393F", "#4E6410", "#8A6D00"];
+  const urlPortada = (ruta) => supabase.storage.from("fotos").getPublicUrl(ruta).data.publicUrl;
 
   const abrir = async (c) => {
     const { data, error } = await supabase.storage.from("archivos").createSignedUrl(c.ruta_archivo, 3600);
@@ -135,9 +136,17 @@ function Catalogos({ lista, onError }) {
     <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
       {lista.map((c, i) => (
         <div key={c.id} className="bg-white rounded-lg overflow-hidden flex flex-col" style={{ border: `1px solid ${S.line}` }}>
-          <div className="h-32 flex items-end p-4" style={{ background: `linear-gradient(140deg, ${tonos[i % tonos.length]}, ${tonos[i % tonos.length]}CC)` }}>
-            <BookOpen color="#fff" size={28} style={{ opacity: 0.9 }} />
-          </div>
+          {c.portada ? (
+            <div className="h-32 overflow-hidden">
+              <img src={urlPortada(c.portada)} alt={c.titulo}
+                className="w-full h-full object-cover" loading="lazy" />
+            </div>
+          ) : (
+            <div className="h-32 flex items-end p-4"
+              style={{ background: `linear-gradient(140deg, ${tonos[i % tonos.length]}, ${tonos[i % tonos.length]}CC)` }}>
+              <BookOpen color="#fff" size={28} style={{ opacity: 0.9 }} />
+            </div>
+          )}
           <div className="p-4 flex-1 flex flex-col">
             <h3 className="font-semibold" style={{ color: S.ink, fontSize: 15 }}>{c.titulo}</h3>
             <p className="mt-1 flex-1" style={{ fontSize: 13, color: "#6B7076" }}>{c.descripcion}</p>
