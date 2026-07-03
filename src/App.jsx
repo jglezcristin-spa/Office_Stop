@@ -164,15 +164,47 @@ function Catalogos({ lista, onError }) {
 }
 
 function Galeria({ lista }) {
+  const [categoria, setCategoria] = useState(null);
   const [abierta, setAbierta] = useState(null);
   const urlDe = (ruta) => supabase.storage.from("fotos").getPublicUrl(ruta).data.publicUrl;
 
   if (!lista.length) return <VacioMsg texto="Aún no hay fotos publicadas." />;
 
+  const categorias = [...new Set(lista.map(f => f.categoria || "General"))].sort();
+
+  if (!categoria) {
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {categorias.map(cat => {
+          const fotosCat = lista.filter(f => (f.categoria || "General") === cat);
+          return (
+            <button key={cat} onClick={() => setCategoria(cat)}
+              className="rounded-lg overflow-hidden text-left group bg-white" style={{ border: `1px solid ${S.line}` }}>
+              <div className="h-36 overflow-hidden">
+                <img src={urlDe(fotosCat[0].ruta_archivo)} alt={cat}
+                  className="w-full h-full object-cover transition-transform group-hover:scale-105" loading="lazy" />
+              </div>
+              <div className="px-3 py-2">
+                <div className="font-semibold" style={{ fontSize: 14, color: S.ink }}>{cat}</div>
+                <div style={{ fontSize: 12, color: "#9AA0A6" }}>{fotosCat.length} fotos</div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+
+  const fotos = lista.filter(f => (f.categoria || "General") === categoria);
   return (
     <>
+      <button onClick={() => setCategoria(null)}
+        className="mb-4 px-3 py-1.5 rounded-md font-medium hover:opacity-80"
+        style={{ border: `1px solid ${S.line}`, color: S.ink, fontSize: 13, background: "#fff" }}>
+        ← Todas las categorías
+      </button>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {lista.map(f => (
+        {fotos.map(f => (
           <button key={f.id} onClick={() => setAbierta(f)}
             className="rounded-lg overflow-hidden text-left group bg-white" style={{ border: `1px solid ${S.line}` }}>
             <div className="h-36 overflow-hidden">
